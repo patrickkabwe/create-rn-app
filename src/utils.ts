@@ -1,6 +1,7 @@
 import { execa } from "execa";
 import inquirer, { QuestionCollection } from "inquirer";
 import fs from "node:fs";
+import path from "node:path";
 import ora from "ora";
 import { packages } from "./resources";
 
@@ -71,14 +72,26 @@ export const getInput = async (initialValues?: Options) => {
 export const createProject = (options: Options) => {
   const { projectName, packageManager } = options;
   const command = getPackageManager(packageManager);
-
-  const process = execa(command, ["react-native", "init", projectName], {
+  const execaProcess = execa(command, ["react-native", "init", projectName], {
     stdio: "inherit",
     shell: true,
   });
-  process.on("exit", () => {
+
+  execaProcess.on("exit", () => {
+    const packageJsonPath = path.join(
+      process.cwd(),
+      projectName,
+      "package.json"
+    );
+    const packageJson = require(packageJsonPath);
     copyTemplate(options);
-    setScripts(options);
+    const newPackageJson = setScripts(options, packageJson);
+    fs.writeFileSync(
+      packageJsonPath,
+      JSON.stringify(newPackageJson, null, 2),
+      "utf-8"
+    );
+
     installPackages(options);
   });
 };
@@ -91,7 +104,7 @@ export const getPackageManager = (packageManager: PackageManager) => {
     : "npx";
 };
 
-const copyTemplate = (options: Options) => {
+export const copyTemplate = (options: Options) => {
   const copingSpinner = ora("Coping template").start();
   const { template, projectName } = options;
 
@@ -100,7 +113,7 @@ const copyTemplate = (options: Options) => {
   copingSpinner.succeed();
 };
 
-const getPackageList = (template: Template) => {
+export const getPackageList = (template: Template) => {
   switch (template) {
     case "graphql":
       return ["@apollo/client", "graphql", "graphql-ws", ...packages];
@@ -111,11 +124,10 @@ const getPackageList = (template: Template) => {
   }
 };
 
-const setScripts = (options: Options) => {
-  const spinner = ora("Coping template").start();
-  const { projectName, packageManager } = options;
-  const packageJsonPath = `./${projectName}/package.json`;
-  const packageJson = require(packageJsonPath);
+export const setScripts = (options: Options, packageJson: any) => {
+  const spinner = ora("Setting up scripts").start();
+  const { packageManager } = options;
+
   const copyOfPackageJson = { ...packageJson };
   packageJson.scripts = {
     ...copyOfPackageJson.scripts,
@@ -125,15 +137,11 @@ const setScripts = (options: Options) => {
     start: "react-native start --reset-cache",
   };
 
-  fs.writeFileSync(
-    packageJsonPath,
-    JSON.stringify(packageJson, null, 2),
-    "utf-8"
-  );
   spinner.succeed();
+  return packageJson;
 };
 
-const installPackages = (options: Options) => {
+export const installPackages = (options: Options) => {
   const installSpinner = ora("Installing packages").start();
   const { packageManager, projectName } = options;
   const command = packageManager || "pnpm";
