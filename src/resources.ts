@@ -1,0 +1,17 @@
+export const packages = [
+  "lottie-ios",
+  "lottie-react-native",
+  "@notifee/react-native",
+  "@react-navigation/native-stack",
+  "@react-navigation/native",
+  "@react-navigation/bottom-tabs",
+  "zustand",
+  "react-native-svg",
+  "lucide-react-native",
+  "react-native-reanimated",
+  "react-native-gesture-handler",
+  "react-native-safe-area-context",
+  "react-native-screens",
+  "react-native-tab-view",
+  "react-native-bootsplash",
+];
