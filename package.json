@@ -1,0 +1,40 @@
+{
+  "name": "@kazion/create-rn-app",
+  "version": "0.1.0",
+  "description": "",
+  "type": "module",
+  "main": "./dist/cli.js",
+  "files": [
+    "dist",
+    "templates",
+    "README.md",
+    "LICENSE",
+    "package.json"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "bin": {
+    "@kazion/create-rn-app": "./dist/cli.js",
+    "create-rn-app": "./dist/cli.js"
+  },
+  "scripts": {
+    "test": "vitest",
+    "build": "rm -rf dist && tsc && npm i -g . && chmod +x ./dist/cli.js",
+    "start": "node ./dist/cli.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "chalk": "^5.3.0",
+    "commander": "^11.1.0",
+    "execa": "^8.0.1",
+    "inquirer": "^9.2.12",
+    "ora": "^7.0.1",
+    "typescript": "^5.3.3"
+  },
+  "devDependencies": {
+    "@types/inquirer": "^9.0.7"
+  }
+}
