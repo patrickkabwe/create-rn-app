@@ -8,8 +8,7 @@
     "dist",
     "templates",
     "README.md",
-    "LICENSE",
-    "package.json"
+    "LICENSE"
   ],
   "publishConfig": {
     "access": "public"
